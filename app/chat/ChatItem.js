@@ -103,96 +103,87 @@ export default class ChatItem extends Component {
   }
 
   _renderContent= (isSelf) => {
-    const { message, isOpen, messageErrorIcon, reSendMessage, rowId } = this.props
+    const { user={}, message, isOpen, messageErrorIcon, reSendMessage, rowId } = this.props
     const { loading } = this.state
     const msg = message.per
+    let name = ''
+    if (isSelf) {
+      if (user.hasOwnProperty('name')) {
+        name = user.name
+      }
+    }else {
+      if (message.hasOwnProperty('chatInfo') && message.chatInfo.hasOwnProperty('name')) {
+        name = message.chatInfo.name
+      }
+    }
+    let item = null
     switch (msg.type) {
       case 'text':
-        if (this.props.renderTextMessage === undefined) {
-          return (
-            <TextMessage
-              rightMessageBackground={this.props.rightMessageBackground}
-              leftMessageBackground={this.props.leftMessageBackground}
-              reSendMessage={reSendMessage}
-              isOpen={isOpen}
-              isSelf={isSelf}
-              messageErrorIcon={messageErrorIcon}
-              message={message}
-              views={this._getActualText(message.per.content)}
-              onMessageLongPress={this.props.onMessageLongPress}
-              onMessagePress={this.props.onMessagePress}
-              rowId={this.props.rowId}
-            />
-          )
-        } else {
-          return this.props.renderTextMessage({isOpen, isSelf, message, views: this._getActualText(message.per.content), index: parseInt(rowId)})
-        }
+        item = <TextMessage
+        rightMessageBackground={this.props.rightMessageBackground}
+        leftMessageBackground={this.props.leftMessageBackground}
+        reSendMessage={reSendMessage}
+        isOpen={isOpen}
+        isSelf={isSelf}
+        messageErrorIcon={messageErrorIcon}
+        message={message}
+        views={this._getActualText(message.per.content)}
+        onMessageLongPress={this.props.onMessageLongPress}
+        onMessagePress={this.props.onMessagePress}
+        rowId={this.props.rowId}
+      />
+      break
       case 'image':
-        if (this.props.renderImageMessage === undefined) {
-          return (
-            <ImageMessage
-              rightMessageBackground={this.props.rightMessageBackground}
-              leftMessageBackground={this.props.leftMessageBackground}
-              reSendMessage={reSendMessage}
-              isOpen={isOpen}
-              isSelf={isSelf}
-              messageErrorIcon={messageErrorIcon}
-              message={message}
-              onMessageLongPress={this.props.onMessageLongPress}
-              onMessagePress={this.props.onMessagePress}
-              rowId={this.props.rowId}
-            />
-          )
-        } else {
-          return this.props.renderImageMessage({isOpen, isSelf, message, index: parseInt(rowId)})
-        }
+        item = <ImageMessage
+        rightMessageBackground={this.props.rightMessageBackground}
+        leftMessageBackground={this.props.leftMessageBackground}
+        reSendMessage={reSendMessage}
+        isOpen={isOpen}
+        isSelf={isSelf}
+        messageErrorIcon={messageErrorIcon}
+        message={message}
+        onMessageLongPress={this.props.onMessageLongPress}
+        onMessagePress={this.props.onMessagePress}
+        rowId={this.props.rowId}
+      />
+      break
       case 'voice':
-        if (this.props.renderVoiceMessage === undefined) {
-          return (
-            <VoiceMessage
-              reSendMessage={reSendMessage}
-              loading={loading}
-              rightMessageBackground={this.props.rightMessageBackground}
-              leftMessageBackground={this.props.leftMessageBackground}
-              isOpen={isOpen}
-              isSelf={isSelf}
-              messageErrorIcon={messageErrorIcon}
-              message={message}
-              onMessageLongPress={this.props.onMessageLongPress}
-              onMessagePress={this.props.onMessagePress}
-              rowId={this.props.rowId}
-              voiceLeftIcon={this.props.voiceLeftIcon}
-              voiceRightIcon={this.props.voiceRightIcon}
-              voiceLoading={this.props.voiceLoading}
-              voicePlaying={this.props.voicePlaying}
-              savePressIndex={this.props.savePressIndex}
-              pressIndex={this.props.pressIndex}
-              voiceLeftLoadingColor={this.props.voiceLeftLoadingColor}
-              voiceRightLoadingColor={this.props.voiceRightLoadingColor}
-            />
-          )
-        } else {
-          return this.props.renderVoiceMessage({isOpen, isSelf, message, index: parseInt(rowId)})
-        }
+        item = <VoiceMessage
+        reSendMessage={reSendMessage}
+        loading={loading}
+        rightMessageBackground={this.props.rightMessageBackground}
+        leftMessageBackground={this.props.leftMessageBackground}
+        isOpen={isOpen}
+        isSelf={isSelf}
+        messageErrorIcon={messageErrorIcon}
+        message={message}
+        onMessageLongPress={this.props.onMessageLongPress}
+        onMessagePress={this.props.onMessagePress}
+        rowId={this.props.rowId}
+        voiceLeftIcon={this.props.voiceLeftIcon}
+        voiceRightIcon={this.props.voiceRightIcon}
+        voiceLoading={this.props.voiceLoading}
+        voicePlaying={this.props.voicePlaying}
+        savePressIndex={this.props.savePressIndex}
+        pressIndex={this.props.pressIndex}
+        voiceLeftLoadingColor={this.props.voiceLeftLoadingColor}
+        voiceRightLoadingColor={this.props.voiceRightLoadingColor}
+      />
+      break
       case 'video' :
-        if (this.props.renderVideoMessage === undefined) {
-          return null
-        } else {
-          return this.props.renderVideoMessage({isOpen, isSelf, message, index: parseInt(rowId)})
-        }
+        item = this.props.renderVideoMessage({isOpen, isSelf, message, index: parseInt(rowId)})
+        break
       case 'location':
-        if (this.props.renderLocationMessage === undefined) {
-          return null
-        } else {
-          return this.props.renderLocationMessage({isOpen, isSelf, message, index: parseInt(rowId)})
-        }
+          item = this.props.renderLocationMessage({isOpen, isSelf, message, index: parseInt(rowId)})
+          break
       case 'share':
-        if (this.props.renderShareMessage === undefined) {
-          return null
-        } else {
-          return this.props.renderShareMessage({isOpen, isSelf, message, index: parseInt(rowId)})
-        }
+        item = this.props.renderShareMessage({isOpen, isSelf, message, index: parseInt(rowId)})
     }
+    let nameAlign = isSelf ? 'flex-end' : 'flex-start'
+    return <View>
+      <Text allowFontScaling={false} numberOfLines={1} style={{fontSize: 10, color: '#999', alignSelf: nameAlign}}>{name}</Text>
+      {item}
+    </View>
   }
 
 
@@ -220,6 +211,16 @@ export default class ChatItem extends Component {
     const isSelf = user.id === message.targetId
     const {loading, isSelect} = this.state
     const Element = isOpen ? TouchableWithoutFeedback : View
+    let shirtNumber = ''
+    if (isSelf) {
+      if (user.hasOwnProperty('shirtNumber')) {
+        shirtNumber = user.shirtNumber
+      }
+    }else {
+      if (message.hasOwnProperty('chatInfo') && message.chatInfo.hasOwnProperty('shirtNumber')) {
+        shirtNumber = message.chatInfo.shirtNumber
+      }
+    }
     return (
       <View>
         <Element
@@ -249,9 +250,12 @@ export default class ChatItem extends Component {
                   disabled={isOpen}
                   onPress={() => this.props.onPressAvatar(isSelf)}
                 >
-                  <Image
+                  {/* <Image
                     source={isSelf ? user.avatar : message.chatInfo.avatar}
-                    style={[styles.avatar, avatarStyle]} />
+                    style={[styles.avatar, avatarStyle]} /> */}
+                  <View style={[styles.avatar, avatarStyle]}>
+                    <Text allowFontScaling={false} numberOfLines={1} style={styles.shirtNumber}>{shirtNumber}</Text>
+                  </View>
                 </TouchableOpacity>
                 {this._renderContent(isSelf)}
                 {
@@ -326,7 +330,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     borderRadius: 24,
     width: 48,
-    height: 48
+    height: 48,
+  },
+  shirtNumber: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   triangle: {
     width: 0,
